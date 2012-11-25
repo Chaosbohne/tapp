@@ -1,0 +1,15 @@
+
+DB username:
+myUser
+
+DB password:
+myUser
+
+
+
+use TankstellenDB
+db.createCollection("tankstelle", {safe:true});
+
+im programm: insertDresden aufrufen ;)
+
+db.Tankstellen.ensureIndex( {latLng : "2d" }, {bits : 32} )

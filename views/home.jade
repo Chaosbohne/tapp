@@ -1,0 +1,39 @@
+#navBarContainer
+  ul#navBereich
+    li#howToUse
+      a(href='howToUse.html') How To Use
+    li#aboutMe
+      a(href='aboutMe.html') About Me
+    li#impressum
+      a(href='impressum.html') Impressum
+#searchBarContainer
+  #searchContainer
+    label LOGO
+    input#searchLocation(type='text', size='50', placeholder='Beispielstrasse 4, 01234 Beispielhausen')
+    button#searchLocationButton(type='image', name='searchLocation')
+  #socialMediaContainer
+    ull#socialMediaList
+      li#facebook
+        img(src='/images/facebook.png', alt='facebook')
+      li#twitter
+        img(src='/images/twitter.png', alt='twitter')
+      li#google-plus
+        img(src='/images/google-plus.png', alt='google-plus')
+#showContainer
+  #detailContainer
+    #searchVoiceContainer
+      button#circleSearch(type='button', name='circleSearch') Umkreissuche
+      button#routeSearch(type='button', name='routeSearch') Routensuche
+    #tankstellenContainer
+     ul#positionList
+      li#posA
+        img(src='http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=A|0000FF|000000', alt='posA')
+        span#posAspanKey Aktueller Standort:
+        span#posAspanValue
+      li#posB
+        img(src='http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=B|0000FF|000000', alt='posB')
+        span#posBspanKey Aktueller Radius:
+        span#posBspanValue
+     ul#nav
+  #mapContainer
+    #map_canvas

@@ -1,0 +1,11 @@
+{
+  "author": "Rico Ruszewski",
+  "name": "TicTacToe",
+  "description": "Useful game realized with websockets",
+  "version" : "0.0.1",
+  "node": "0.8.1",
+  "dependencies": {
+     "jade" : "0.26.3",
+     "express" : "2.5.10"
+  }
+}

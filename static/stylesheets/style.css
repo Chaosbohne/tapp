@@ -1,0 +1,159 @@
+html{
+  height: 100%;
+  width: 100%;
+}
+
+body{
+  font-family: Helvetica, Arial, Sans-Serif;
+  font-size: 16px;
+  margin: 0px;
+  padding: 0px;
+  height: 100%;
+  width: 100%;
+}
+
+#main{
+  width: 100%;
+  height: 100%;
+}
+
+#navBarContainer{
+  width: 100%;
+  height: 4%;
+}
+
+#navBereich {
+  width: 100%;
+  height: 100%;
+  margin: 0; 
+  padding: 0;
+  background-color: #2A211C;
+  text-align:right;
+}
+
+#navBereich li {
+  display: inline;
+  list-style-type: none;
+  vertical-align: middle;
+}
+
+#tankstellenContainer li {
+  list-style-type: none;
+}
+
+#navBereich a {
+  text-decoration: none;
+  padding: 0 15px;
+  color: #E5E3DF;
+  font-weight: bold;
+}
+
+#navBereich a:hover {
+  color: #FFFFFF;
+}
+
+#searchBarContainer {
+  height: 8%;
+  width:100%;
+  background-color: #E5E3DF;
+  margin: 0;
+  padding: 0;
+}
+
+#searchContainer {
+  height: 100%;
+  width: 80%;
+  margin: 0;
+  float: left;
+  padding: 0;
+}
+
+#searchContainer  label,
+#searchContainer  input {
+  display: inline-block;
+  margin: 10px 15px;
+}
+
+#searchContainer  input{
+  height: 25px;
+  width: 450px;
+  font-size: 16px;
+}
+
+#searchLocationButton {
+  background: url('/images/search.png');
+  width: 74px;
+  height: 29px;
+}
+
+#searchContainer  label {
+  width: 200px;
+}
+
+
+#socialMediaList li {
+  display: inline;
+  list-style-type: none;
+  vertical-align: middle;
+}
+
+#socialMediaContainer {
+    width: 20%;
+    height: 100%;
+    float: right;
+    text-align:right;
+    margin: 0px;
+    padding: 0px;    
+    position: relative;
+}
+
+#socialMediaContainer img {
+  padding: 0 10px;
+  margin: 10px 0 0 0;
+}
+
+
+#showContainer{
+  width:100%;
+  height: 88%;
+  margin: 0px;
+  padding: 0px;
+}
+
+  #detailContainer{
+    width: 30%;
+    height: 100%;
+    float: left;
+    margin: 0px;
+    padding: 0px;
+  }
+  
+    #tankstellenContainer{
+      width: 100%;
+      height: 95%;
+      margin: 0px;
+      padding: 0px;
+    }
+
+    #searchVoiceContainer{
+      width: 100%;
+      height: 5%;
+      margin: 0px;
+      padding: 0px;
+    }
+    
+  #mapContainer{
+    width: 70%;
+    height: 100%;
+    float: left;
+    position: relative;
+  }
+
+#map_canvas{
+  height: 100%;
+  width: 100%;
+}
+
+#loadsceen{
+ display: none;
+}
