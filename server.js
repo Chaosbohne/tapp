@@ -37,8 +37,10 @@ var port = process.env['app_port'] || 8000;
 var PetrolProvider = require('./petrolProvider').PetrolProvider;
 var petrolProvider = new PetrolProvider(app);
 
+/*
 var SocketIoServer = require('./socketIoProvider').SocketIoProvider;
 var socketIoServer = new SocketIoProvider(app, petrolProvider);
+*/
 
 /* Konfiguration des Servers */
 /* ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
@@ -94,5 +96,5 @@ app.listen(port, function() {
 /* Wenn Route / angesprochen wird */
 app.get('/', function (req, res) {
   /* Rendern der View root */
-  res.render('layout');
+  res.render('home');
 });
