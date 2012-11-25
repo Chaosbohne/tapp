@@ -94,5 +94,5 @@ app.listen(port, function() {
 /* Wenn Route / angesprochen wird */
 app.get('/', function (req, res) {
   /* Rendern der View root */
-  res.render('home');
+  res.render('layout');
 });
