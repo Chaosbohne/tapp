@@ -58,20 +58,6 @@ PetrolProvider = function (expressServer) {
       }
     });
   };
-
-  PetrolProvider.prototype.findAllWithCircle = function(data, callback) {
-    this.getCollection( function(error, collection) {
-      console.log(data);
-      if(error) callback(error);
-      else {
-        collection.find( { 'latLng' : { '$within' : {'$centerSphere' : [[data.longitude,data.latitude],data.radius] } } }).toArray( function( error, results) {
-          console.log(results);
-          if(error) callback(error);
-          else callback(null, results);
-        });
-      }
-    });
-  };
   
   PetrolProvider.prototype.insertDresden = function() {
     //this.db.createCollection('tankstelle', {safe:true}, function(err, collection) {});
