@@ -19,6 +19,7 @@ MapProvider = function(mapID, mapSearchID, geoObj, geoLocateProvider, socketIoPr
     this.autocomplete = new google.maps.places.Autocomplete(this.inputField, myOptions);
     this.autocomplete.bindTo('bounds', this.map);
   }
+
   
   MapProvider.prototype.initAutocompleteHandler = function() {
   
@@ -34,24 +35,31 @@ MapProvider = function(mapID, mapSearchID, geoObj, geoLocateProvider, socketIoPr
         }
     });  
     
-
     $('#searchLocation').focusin(function () {
       $(document).keypress(function (e) {
         if (e.which == 13) {
-        console.log('keypress');
-          var firstResult = $(".pac-container .pac-item:first").text();
-          _this.geoLocateProvider.geoLocateAdress(firstResult, function(error, results) {
-            if(results) {
-              _this.showMap(results[0].geometry.location);
-              var placeName = results[0].address_components[0].long_name;
-              $('#searchLocation').val(placeName);
-            }else {
-              console.log('focusin-handler: no address found');
-            }
-          });
+          takeFirstItem();
         }
       });
     });
+    
+    $('button#searchLocationButton').click(function () {
+      takeFirstItem();
+    });
+    
+    function takeFirstItem() {
+      var firstResult = $(".pac-container .pac-item:first").text();
+      _this.geoLocateProvider.geoLocateAdress(firstResult, function(error, results) {
+        if(results) {
+          _this.showMap(results[0].geometry.location);
+          var placeName = results[0].address_components[0].long_name;
+          $('#searchLocation').val(placeName);
+        }else {
+          console.log('focusin-handler: no address found');
+        }
+      });
+    };
+    
   }
 
   MapProvider.prototype.showMap = function(result) {    

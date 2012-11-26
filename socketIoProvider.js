@@ -5,6 +5,7 @@ SocketIoProvider = function (expressServer, petrolProvider) {
   this.socketIo.sockets.on('connection', function (socket) {
     console.log('SOCKET IO CONNECTED');
     
+    
     socket.on('geolocation', function (data) {
       console.log(data);
     });
