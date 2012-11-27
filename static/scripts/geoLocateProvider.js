@@ -72,11 +72,11 @@ GeoLocateProvider = function() {
     }
   }
 
-  function geoLocationCodeLatLng(position, callback) {
-    var latLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+  GeoLocateProvider.prototype.geoLocationCodeLatLng = function(position, callback) {
+    var latLng = new google.maps.LatLng(position.$a, position.ab);
     this.geocoder.geocode({'latLng':latLng, 'region':'de'}, function(results, status) {
       if(status == google.maps.GeocoderStatus.OK) {
-        callback(null, results);
+        callback(null, results[0]);
       }else {
         callback(null);
       }
@@ -104,7 +104,8 @@ GeoLocateProvider = function() {
           if(city != null && country.toLowerCase() == this.myCountry) {
             this.geocoder.geocode({'address':city + ' '+ country}, function(results, status){
               if(status == google.maps.GeocoderStatus.OK) {
-                callback(results);
+                console.log('calback null results');
+                callback(results );
               }else {
                 callback(null);
               }

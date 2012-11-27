@@ -8,11 +8,11 @@
   
   /* If document is ready, begin... */
   $(document).ready(function() {     
-    //var socketIoProviderClient = new SocketIoProviderClient('http://localhost', 8000);
     var socketIoProviderClient = new SocketIoProviderClient('http://localhost', 8000);
     var geoLocateProvider = new GeoLocateProvider();
-    var mapProvider = null; 
+    var mapProvider = new MapProvider('map_canvas', 'searchLocation', geoLocateProvider, socketIoProviderClient); 
 
+    /*
     geoLocateProvider.ipLocationPackage( function (error, results) {
     if(!error) {
       if(results[0].geometry.location) {
@@ -32,6 +32,7 @@
       });
     }
   });
+  */
     
 
   });

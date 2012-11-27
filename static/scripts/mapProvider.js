@@ -1,28 +1,92 @@
 ﻿
-MapProvider = function(mapID, mapSearchID, geoObj, geoLocateProvider, socketIoProviderClient) {
+MapProvider = function(mapID, mapSearchID, geoLocateProvider, socketIoProviderClient) {
   MapProvider.prototype.mapDiv = document.getElementById(mapID);
   MapProvider.prototype.inputField = document.getElementById(mapSearchID);
-  MapProvider.prototype.map = null;
   MapProvider.prototype.autocomplete = null;
   MapProvider.prototype.geoLocateProvider = geoLocateProvider;
   MapProvider.prototype.socketIoProviderClient = socketIoProviderClient;
   MapProvider.prototype.distanceWidget = null;
   
-
-
+  var _this = this;
   
+  function createBindings(results) { 
+        var myOptions = { mapTypeId: google.maps.MapTypeId.ROADMAP, center: results[0].geometry.location};
+        _this.set('map', new google.maps.Map(_this.mapDiv, myOptions));
+        _this.set('position_name', results[0].address_components[0].long_name);
+        _this.set('position', results[0].geometry.location);
+       
+        _this.distanceWidget = new DistanceWidget(geoLocateProvider);
+        _this.distanceWidget.bindTo('map', _this);
+        _this.distanceWidget.bindTo('position', _this); 
+        _this.bindTo('radius', _this.distanceWidget, 'distance');
+        _this.get('map').fitBounds(_this.distanceWidget.get('bounds'));
+        
+        _this.initAutocomplete();
+        _this.initAutocompleteHandler();
+        _this.socketIoProviderClient.bindTo('map', _this);
+        
+        google.maps.event.addListener(_this.distanceWidget.marker, 'dragend', function() {
+          _this.geoLocateProvider.geoLocationCodeLatLng( _this.get('position'), function(error, results) {
+            if(results) {
+            
+              var index = results.formatted_address.indexOf(', Deutschland');
+              var address;
+                if(index != -1) {
+                address = results.formatted_address.substring(0, index);
+              }else {
+                address = results.formatted_address;
+              }
+
+              _this.setBindings(_this.get('position'), address);
+            }
+          });
+        });        
+        
+        google.maps.event.addListener(_this.distanceWidget.radiusWidget.sizer, 'dragend', function() {
+          var mySpot = {
+            longitude: _this.get('position').ab,
+            latitude: _this.get('position').$a,
+            radius: _this.get('radius')/(6371)
+          };   
+          _this.socketIoProviderClient.send('stations', mySpot);        
+        });
+  }
+  
+  geoLocateProvider.ipLocationPackage( function(error, results) {
+    if(results) {
+      if(results[0].geometry.location) {
+        createBindings(results);
+      }
+    }else {
+      geoLocateProvider.defaultLocationPackage( function (error, results) {
+        if(results) {
+          if(results[0].geometry.location) {
+            createBindings(results);
+          }
+        }
+      });
+    }
+  });
+    
+  MapProvider.prototype.radius_changed = function() {
+    $('span#posBspanValue').text(this.get('radius'));
+  };
+  
+  MapProvider.prototype.position_name_changed = function() {
+    console.log('position_name_changed changed');
+    $('span#posAspanValue').text(this.get('position_name'));
+  };
+
   MapProvider.prototype.initAutocomplete = function() {  
     var myOptions = {
       types: ['geocode']
     };
   
     this.autocomplete = new google.maps.places.Autocomplete(this.inputField, myOptions);
-    this.autocomplete.bindTo('bounds', this.map);
+    this.autocomplete.bindTo('bounds', this.get('map'));
   }
-
   
   MapProvider.prototype.initAutocompleteHandler = function() {
-  
     var _this = this;
     
     google.maps.event.addListener(_this.autocomplete, 'place_changed', function() {
@@ -30,7 +94,7 @@ MapProvider = function(mapID, mapSearchID, geoObj, geoLocateProvider, socketIoPr
         var place = _this.autocomplete.getPlace();
         if(place.geometry) {
           if (place.geometry.location) {
-            _this.showMap(place.geometry.location);
+            _this.setBindings(place.geometry.location, place.name);
           }
         }
     });  
@@ -49,122 +113,32 @@ MapProvider = function(mapID, mapSearchID, geoObj, geoLocateProvider, socketIoPr
     
     function takeFirstItem() {
       var firstResult = $(".pac-container .pac-item:first").text();
+      if(firstResult.length == 0) {
+        firstResult = $('#searchLocation').val();
+      }
       _this.geoLocateProvider.geoLocateAdress(firstResult, function(error, results) {
         if(results) {
-          _this.showMap(results[0].geometry.location);
-          var placeName = results[0].address_components[0].long_name;
-          $('#searchLocation').val(placeName);
+          _this.setBindings(results[0].geometry.location, results[0].address_components[0].long_name);
         }else {
           console.log('focusin-handler: no address found');
         }
       });
     };
-    
   }
-
-  MapProvider.prototype.showMap = function(result) {    
-    if(!this.map) {
-    
-      var myOptions = {
-        center: result,
-        mapTypeId: google.maps.MapTypeId.ROADMAP
-      };
+  
+  MapProvider.prototype.setBindings = function(position, position_name) {
+    _this.set('position', position);
+    _this.set('position_name', position_name);
+    _this.get('map').fitBounds(_this.distanceWidget.get('bounds'));
       
-      this.map = new google.maps.Map(this.mapDiv, myOptions);
-      this.distanceWidget = new DistanceWidget(this.map, this);
-      this.distanceWidget.bindTo('position', this, 'position');    
-    }else {
-      this.map.setCenter(result);
-    }
-
-     var mySpot = {
-       latitude: result.$a,
-       longitude: result.ab,
-       radius: this.distanceWidget.get('distance')/(6371)
-     };    
-     this.set('position', result);
-     this.map.fitBounds(this.distanceWidget.get('bounds'));
-     this.socketIoProviderClient.send('stations', mySpot);
-     $('span#posAspanValue').text(result);
-     $('span#posBspanValue').text(this.distanceWidget.get('distance'));
-  } 
-  
-  this.showMap(geoObj);
-  this.initAutocomplete();
-  this.initAutocompleteHandler();
+    var mySpot = {
+      longitude: position.ab,
+      latitude: position.$a,
+      radius: _this.get('radius')/(6371)
+    };              
+    _this.socketIoProviderClient.send('stations', mySpot);    
+  }  
 };
-
 MapProvider.prototype = new google.maps.MVCObject();
-/*
-var center:LatLng = bounds.getCenter();
- 
-//3.
-map.setZoom(map.getBoundsZoomLevel(bounds));
- 
-//4.
-map.setCenter(center);
-  */  
-  /*
-    console.log(latLng);
-    console.log(bounds.getSouthWest());
-    console.log(bounds.getNorthEast());
-    console.log(bounds.getCenter());
-    
-    
-    var marker = new google.maps.Marker({
-      position: latLng, 
-      map: this.map, 
-      title:"Position of location"
-    });
-   
-    var marker = new google.maps.Marker({
-      position: bounds.getSouthWest(), 
-      map: this.map, 
-      title:"Bounds.ca"
-    });
-    var marker = new google.maps.Marker({
-      position: bounds.getNorthEast(), 
-      map: this.map, 
-      title:"Bounds.ea"
-    });
-    var marker = new google.maps.Marker({
-      position: bounds.getCenter(), 
-      map: this.map, 
-      title:"Bounds.center"
-    });
 
-  var R = 6371; // Radius of the Earth in km
-  var dLat = (bounds.getNorthEast().lat() - bounds.getCenter().lat()) * Math.PI / 180;
-  var dLon = (bounds.getNorthEast().lng() - bounds.getCenter().lng()) * Math.PI / 180;
-  var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(bounds.getCenter().lat() * Math.PI / 180) * Math.cos(bounds.getNorthEast().lat() * Math.PI / 180) *  Math.sin(dLon / 2) * Math.sin(dLon / 2);
-  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  var d = R * c;
-  console.log('Distanz google: '+d);
-  
-    var r = 3963.0;  
-
-    // Convert lat or lng from decimal degrees into radians (divide by 57.2958)
-    var lat1 = bounds.getCenter().lat() / 57.2958; 
-    var lon1 = bounds.getCenter().lng() / 57.2958;
-    var lat2 = bounds.getNorthEast().lat() / 57.2958;
-    var lon2 = bounds.getNorthEast().lng() / 57.2958;
-
-    // distance = circle radius from center to Northeast corner of bounds
-    var dis = r * Math.acos(Math.sin(lat1) * Math.sin(lat2) + Math.cos(lat1) * Math.cos(lat2) * Math.cos(lon2 - lon1));
-    console.log('Distanz: '+dis);
-  }
-*/
-  /*
-    var marker = new google.maps.Marker({
-      position: myLatlng, 
-      map: map, 
-      title:"Hello World!"
-  });
-  
-    var marker = new google.maps.Marker({
-      position: myLatlng, 
-      map: map, 
-      title:"Hello World!"
-  });
-  */
 

@@ -1,9 +1,8 @@
 ﻿
 SocketIoProviderClient = function(url, port) {
-  //SocketIoProviderClient.prototype.socketIoClient = io.connect(url + ':' + port);
-  SocketIoProviderClient.prototype.socketIoClient = io.connect('http://tapp.nodester.com:80');
+  SocketIoProviderClient.prototype.socketIoClient = io.connect(url + ':' + port);
+  //SocketIoProviderClient.prototype.socketIoClient = io.connect('http://tapp.nodester.com:80');
   //SocketIoProviderClient.prototype.socketIoClient = new io.Socket(null, {port: 8000, rememberTransport: false}); 
-  SocketIoProviderClient.prototype.mapProvider = null;
   SocketIoProviderClient.prototype.markersArray = [];
   
   this.socketIoClient.on('all', function(data){
@@ -12,7 +11,7 @@ SocketIoProviderClient = function(url, port) {
 
   var _this = this;
   this.socketIoClient.on('stationsRes', function(data){
-    if(_this.mapProvider) {
+    if(_this.get('map')) {
         if(_this.markersArray) {
         for(var i = _this.markersArray.length - 1; i >= 0; i--) {
           _this.markersArray[i].setMap(null);
@@ -24,7 +23,7 @@ SocketIoProviderClient = function(url, port) {
         console.log(data[i]);
         var marker = new google.maps.Marker({
           draggable: false,
-          map: _this.mapProvider.map,
+          map:_this.get('map'),
           position: new google.maps.LatLng(data[i].latLng.latitude, data[i].latLng.longitude),
           title: 'Tankstelle'
         });
@@ -60,9 +59,8 @@ SocketIoProviderClient = function(url, port) {
   SocketIoProviderClient.prototype.send = function(event, message){
     this.socketIoClient.emit(event, message);
   }
-  
-
 };
+SocketIoProviderClient.prototype = new google.maps.MVCObject();
   /*
   function initSocket(){
     console.log('starting socket');

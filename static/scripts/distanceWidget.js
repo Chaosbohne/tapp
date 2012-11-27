@@ -18,11 +18,10 @@
        *
        * @constructor
        */
-      DistanceWidget = function(map, mapProvider) {
-        DistanceWidget.prototype.mapProvider = mapProvider;
+      DistanceWidget = function() {
         DistanceWidget.prototype.radiusWidget = null;
-        this.set('map', map);
-        this.set('position', map.getCenter());
+        DistanceWidget.prototype.marker = null;
+        
         this.set('distance', 1);
 
         var pinColor = "0000FF";
@@ -32,45 +31,45 @@
             new google.maps.Size(21, 34),
             new google.maps.Point(0,0),
             new google.maps.Point(10, 34));        
-        var marker = new google.maps.Marker({
+            
+        this.marker = new google.maps.Marker({
           draggable: true,
           title: 'Move me!',
           icon: pinImage
         });
 
         // Bind the marker map property to the DistanceWidget map property
-        marker.bindTo('map', this);
+        this.marker.bindTo('map', this);
 
         // Bind the marker position property to the DistanceWidget position
         // property
-        marker.bindTo('position', this);
+        this.marker.bindTo('position', this);
 
         // Create a new radius widget
-        radiusWidget = new RadiusWidget(mapProvider);
+        this.radiusWidget = new RadiusWidget();
 
         // Bind the radiusWidget map to the DistanceWidget map
-        radiusWidget.bindTo('map', this);
+        this.radiusWidget.bindTo('map', this);
 
         // Bind the radiusWidget center to the DistanceWidget position
-        radiusWidget.bindTo('center', this, 'position');
+        this.radiusWidget.bindTo('center', this, 'position');
 
         // Bind to the radiusWidgets' distance property
-        this.bindTo('distance', radiusWidget);
+        this.bindTo('distance', this.radiusWidget);
 
         // Bind to the radiusWidgets' bounds property
-        this.bindTo('bounds', radiusWidget);
+        this.bindTo('bounds', this.radiusWidget);
       
-        this.bindTo('distance', radiusWidget, 'distance');
+        //this.bindTo('distance', radiusWidget, 'distance');
         
         var _this = this;
-        google.maps.event.addListener(marker, 'dblclick', function() {
+        google.maps.event.addListener(this.marker, 'dblclick', function() {
           // When a user double clicks on the icon fit to the map to the bounds
           _this.get('map').fitBounds(_this.get('bounds'));
         });
         
-        google.maps.event.addListener(marker, 'dragend', function() {
-          _this.mapProvider.showMap(_this.get('position'));
-        });
-        
+        google.maps.event.addListener(this.marker, 'dragend', function() {
+          _this.get('map').setCenter(_this.get('position'));
+        });        
       }
       DistanceWidget.prototype = new google.maps.MVCObject();

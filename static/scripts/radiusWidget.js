@@ -3,9 +3,9 @@
        *
        * @constructor
        */
-      RadiusWidget = function(mapProvider) {
-        RadiusWidget.prototype.mapProvider = mapProvider;
-      
+      RadiusWidget = function() {
+       RadiusWidget.prototype.sizer = null;
+       
         var circle = new google.maps.Circle({
           strokeWeight: 2
         });
@@ -55,24 +55,26 @@
             new google.maps.Point(0,0),
             new google.maps.Point(10, 34));  
       
-        var sizer = new google.maps.Marker({
+        this.sizer = new google.maps.Marker({
           draggable: true,
           title: 'Drag me!',
           icon: pinImage
         });
 
-        sizer.bindTo('map', this);
-        sizer.bindTo('position', this, 'sizer_position');
+        this.sizer.bindTo('map', this);
+        this.sizer.bindTo('position', this, 'sizer_position');
 
         var _this = this;
-        google.maps.event.addListener(sizer, 'drag', function() {
+        google.maps.event.addListener(this.sizer, 'drag', function() {
           // Set the circle distance (radius)
           _this.setDistance();
         });
         
-        google.maps.event.addListener(sizer, 'dragend', function() {
-          _this.mapProvider.showMap(_this.get('center'));
+        
+        google.maps.event.addListener(this.sizer, 'dragend', function() {
+          _this.get('map').fitBounds(_this.get('bounds'));
         });
+        
       };
 
 
