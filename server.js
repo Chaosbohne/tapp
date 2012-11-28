@@ -98,3 +98,9 @@ app.get('/', function (req, res) {
   /* Rendern der View root */
   res.render('home');
 });
+
+/*
+app.get('/start', function (req, res) {
+  petrolProvider.insertDresden();
+});
+*/
