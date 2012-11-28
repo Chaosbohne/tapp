@@ -11,4 +11,6 @@
     var socketIoProviderClient = new SocketIoProviderClient('http://localhost', 8000);
     var geoLocateProvider = new GeoLocateProvider();
     var mapProvider = new MapProvider('map_canvas', 'searchLocation', geoLocateProvider, socketIoProviderClient); 
+    
+    
   });

@@ -148,6 +148,13 @@ body{
     float: left;
     position: relative;
   }
+  
+#nav li {
+  height: 30px;
+  border-width: thin;
+  border-style: solid;
+  margin: 2px;
+}
 
 #map_canvas{
   height: 100%;
